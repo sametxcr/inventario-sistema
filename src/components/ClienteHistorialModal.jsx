@@ -4,7 +4,7 @@ import { formatearPrecio } from '../utils/calculations';
 import OrdenTrabajoForm from './OrdenTrabajoForm';
 import ClienteForm from './ClienteForm';
 import { abrirOTEnNuevaVentana } from '../utils/imprimirOT';
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 
 export default function ClienteHistorialModal({ rut, onCerrar, setMensaje = () => {} }) {
