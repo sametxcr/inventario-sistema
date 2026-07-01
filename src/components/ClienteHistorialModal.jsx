@@ -7,8 +7,6 @@ import { abrirOTEnNuevaVentana } from '../utils/imprimirOT';
 import { API_URL } from '../api';
 
 
-import.meta.env.VITE_API_URL || 'http://localhost:3001'
-
 export default function ClienteHistorialModal({ rut, onCerrar, setMensaje = () => {} }) {
   const { triggerRefresh, refreshKey } = useRefresh();
   const [historial, setHistorial] = useState([]);
