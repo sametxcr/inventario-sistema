@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3001/api';
+const API_URL = 'API_BASE/api';
 
 // Función helper pa limpiar el endpoint
 const buildUrl = (endpoint) => {
