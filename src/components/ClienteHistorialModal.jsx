@@ -6,7 +6,7 @@ import ClienteForm from './ClienteForm';
 import { abrirOTEnNuevaVentana } from '../utils/imprimirOT';
 
 
-const API_URL = 'http://localhost:3001/api';
+import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 export default function ClienteHistorialModal({ rut, onCerrar, setMensaje = () => {} }) {
   const { triggerRefresh, refreshKey } = useRefresh();
