@@ -80,25 +80,28 @@ const eliminarProducto = async (id, sku) => {
                     <td className="p-2 font-bold">{p.sku}</td>
                     
                     <td className="p-2 text-center">
-                      {p.imagen_url ? (
-                        <img 
-                          src={`${API_URL}${p.imagen_url}`}
-                          alt={p.nombre}
-                          className="w-12 h-12 object-cover rounded mx-auto hover:scale-110 transition-transform"
-                          onClick={(e) => {
-                            e.stopPropagation(); // ← No abre el form
-                            window.open(`${API_URL}${p.imagen_url}`, '_blank');
-                          }}
-                          onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/48?text=📷';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center text-xs mx-auto">
-                          📷
-                        </div>
-                      )}
-                    </td>
+  {p.imagen_url ? (
+    <img 
+      src={`${API_URL}${p.imagen_url}`}
+      alt={p.nombre}
+      className="w-12 h-12 object-cover rounded mx-auto hover:scale-110 transition-transform"
+      onClick={(e) => {
+        e.stopPropagation();
+        window.open(`${API_URL}${p.imagen_url}`, '_blank');
+      }}
+      onError={(e) => {
+        e.target.style.display = 'none'; // ← Oculta la imagen rota
+        e.target.nextSibling.style.display = 'flex'; // ← Muestra el ícono
+      }}
+    />
+  ) : null}
+  <div 
+    className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center text-xl mx-auto"
+    style={{ display: p.imagen_url ? 'none' : 'flex' }}
+  >
+    📦
+  </div>
+</td>
                     
                     <td className="p-2">{p.nombre}</td>
                     <td className="p-2">
