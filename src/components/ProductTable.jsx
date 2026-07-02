@@ -1,6 +1,7 @@
 import { formatearPrecio } from '../utils/calculations';
 import { FAMILY_COLORS } from '../config/app';
-import { api } from '../api';
+import { api } from '../api'; // ← AGREGA ESTA LÍNEA
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ProductTable({ 
   productos, 
@@ -10,14 +11,14 @@ export default function ProductTable({
   setListaCotizacion, 
   onRecargar,
   onVerHistorial,
-  setMensaje // ← AGREGA ESTA LÍNEA
+  setMensaje
 }) {
   
 const eliminarProducto = async (id, sku) => {
   if (!window.confirm(`¿Eliminar ${sku}?\n\nSe borrará también su historial de movimientos.`)) return;
   
   try {
-    await api.delete(`productos/${id}`);
+    await api.delete(`productos/${id}`); // ← Ahora sí existe api
     setListaCotizacion(listaCotizacion.filter(item => item.sku !== sku));
     onRecargar();
     setMensaje(`Producto ${sku} eliminado`, 'success');
