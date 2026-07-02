@@ -252,7 +252,7 @@ const handleSubmit = async (e) => {
       const formData = new FormData();
       formData.append('foto', archivoFoto);
       
-      const res = await fetch(`${API_URL}/productos/${sku}/foto`, {
+      const res = await fetch(`${API_URL}/productos/${skuFinal}/foto`
         method: 'POST',
         body: formData
       });
