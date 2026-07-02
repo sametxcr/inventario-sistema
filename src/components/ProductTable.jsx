@@ -90,8 +90,7 @@ const eliminarProducto = async (id, sku) => {
         window.open(`${API_URL}${p.imagen_url}`, '_blank');
       }}
       onError={(e) => {
-        e.target.style.display = 'none'; // ← Oculta la imagen rota
-        e.target.nextSibling.style.display = 'flex'; // ← Muestra el ícono
+        e.target.style.display = 'none'; // Si la foto no carga, la oculta
       }}
     />
   ) : null}
