@@ -7,7 +7,7 @@ const CONFIG = {
   RUT_EMPRESA: '76.932.509-3'
 };
 
-const API_URL = 'http://localhost:3001/api';
+import { API_URL } from '../api';
 
 export default function CotizacionTab({ 
   listaCotizacion, 
