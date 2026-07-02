@@ -81,12 +81,12 @@ const eliminarProducto = async (id, sku) => {
                     <td className="p-2 text-center">
                       {p.imagen_url ? (
                         <img 
-                          src={`http://localhost:3001${p.imagen_url}`} 
+                          src={`${API_URL}${p.imagen_url}`}
                           alt={p.nombre}
                           className="w-12 h-12 object-cover rounded mx-auto hover:scale-110 transition-transform"
                           onClick={(e) => {
                             e.stopPropagation(); // ← No abre el form
-                            window.open(`http://localhost:3001${p.imagen_url}`, '_blank');
+                            window.open(`${API_URL}${p.imagen_url}`, '_blank');
                           }}
                           onError={(e) => {
                             e.target.src = 'https://via.placeholder.com/48?text=📷';
