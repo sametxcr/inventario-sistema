@@ -7,7 +7,7 @@ const CONFIG = {
   RUT_EMPRESA: '76.932.509-3'
 };
 
-import { API_URL } from '../api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function CotizacionTab({ 
   listaCotizacion, 
