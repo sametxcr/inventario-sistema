@@ -249,23 +249,22 @@ const handleSubmit = async (e) => {
     }
 
     // 2. SI HAY FOTO NUEVA, SÚBELA SIEMPRE - NUEVO O EDITANDO
-    if (archivoFoto) {
-      const formData = new FormData();
-      formData.append('foto', archivoFoto);
-      
-      const res = await fetch(`${API_URL}/productos/${skuFinal}/foto`
-        method: 'POST',
-        body: formData
-      });
-      
-      if (!resFoto.ok) {
-        throw new Error('Error al subir la foto');
-      }
-      
-      const dataFoto = await resFoto.json();
-      // Actualiza el form con la nueva URL pa que se vea al tiro
-      setForm(prev => ({...prev, imagen_url: dataFoto.foto_url}));
-    }
+   if (archivoFoto) {
+  const formData = new FormData();
+  formData.append('foto', archivoFoto);
+  
+  const resFoto = await fetch(`${API_URL}/productos/${skuFinal}/foto`, {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!resFoto.ok) {
+    throw new Error('Error al subir la foto');
+  }
+  
+  const dataFoto = await resFoto.json();
+  setForm(prev => ({...prev, imagen_url: dataFoto.foto_url}));
+}
 
     await cargarFamilias();
     onGuardar(!!productoEditando?.id);  // ← Esto debe recargar la lista en el padre
