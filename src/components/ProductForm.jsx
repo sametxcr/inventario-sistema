@@ -63,7 +63,7 @@ useEffect(() => {
     });
     setPreviewImg(
       productoEditando.imagen_url 
-       ? `http://localhost:3001${productoEditando.imagen_url}` 
+       ? `${API_URL}${productoEditando.imagen_url}` 
         : null
     );
   } else {
