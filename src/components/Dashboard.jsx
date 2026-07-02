@@ -145,13 +145,18 @@ export default function Dashboard() {
     setPorDia(porDiaTemp);
 
     const ahoraChile = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Santiago' }));
-    const hoy = ahoraChile.toLocaleDateString('es-CL', {
-      timeZone: 'America/Santiago',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).split('/').join('-'); // Cambia a DD-MM-YYYY
-    const ingresosHoy = porDiaTemp[hoy]||0;
+    const hoyInicio = new Date(ahoraChile);
+hoyInicio.setHours(0, 0, 0, 0);
+const hoyFin = new Date(ahoraChile);
+hoyFin.setHours(23, 59, 59, 999);
+
+const ingresosHoy = otsEntregadas
+  .filter(ot => {
+    const f = parsearFechaChile(ot.fecha_entrega);
+    if (!f) return false;
+    return f >= hoyInicio && f <= hoyFin;
+  })
+  .reduce((s, ot) => s + (Number(ot.monto_final) || Number(ot.monto_estimado) || 0), 0);
 
     const diaSemana = ahoraChile.getDay();
     const lunesOffset = diaSemana === 0? -6 : 1 - diaSemana;
