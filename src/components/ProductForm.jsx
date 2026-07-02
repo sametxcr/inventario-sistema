@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { api } from '../api';
 import { calcularPrecios, formatearPrecio } from '../utils/calculations';
 import { PORCENTAJES_VENTA, CONFIG, FAMILIAS_DEFAULT } from '../config/app';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ProductForm({ productoEditando, modo, onGuardar, onLimpiar, onFamiliasChange, onEditarProducto, setMensaje }) {
 
