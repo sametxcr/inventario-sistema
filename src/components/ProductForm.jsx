@@ -63,10 +63,10 @@ useEffect(() => {
       imagen_url: productoEditando.imagen_url || '' // ← FALTABA ESTA LÍNEA
     });
     setPreviewImg(
-      productoEditando.imagen_url 
-       ? `${API_URL}${productoEditando.imagen_url}` 
-        : null
-    );
+  productoEditando.imagen_url 
+   ? `${API_URL.replace('/api', '')}${productoEditando.imagen_url}` 
+    : null
+);
   } else {
     limpiarForm();
   }
