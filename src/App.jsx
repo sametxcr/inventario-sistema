@@ -14,6 +14,7 @@ import ProyectCar from "./components/ProyectCar";
 import RelojSistema from "./components/RelojSistema";
 import { importarDesdeExcel } from "./utils/importarExcel";
 import * as XLSX from 'xlsx';
+import PasswordModal from './components/PasswordModal';
 
 // VERSIÓN ESTABLE DE VISTA COTIZACIÓN (sin CSS roto)
 export const abrirVistaCotizacion = (cot, setMensaje) => {
@@ -261,8 +262,12 @@ function App() {
   const [cotizacionEditando, setCotizacionEditando] = useState(null);
   const [modalCotizacion, setModalCotizacion] = useState(null);
   const [validezDias, setValidezDias] = useState(15);
+  const [autenticado, setAutenticado] = useState(false);
   
-  
+  useEffect(() => {
+  const auth = sessionStorage.getItem('taller_auth');
+  if (auth === 'ok') setAutenticado(true);
+}, []);
 
   
   const mostrarMensaje = (texto, tipo = 'success') => {
@@ -270,6 +275,33 @@ function App() {
   if (tipo === 'error') toast.error(texto);
   if (tipo === 'warning') toast.warning(texto);
   if (tipo === 'info') toast.info(texto);
+};
+ const cargarFamilias = async () => {
+    const productos = await api.get('productos');
+    const familiasUnicas = [...new Set(productos.map(p => p.familia))].filter(Boolean).sort();
+    setFamiliasDB(['Todas',...familiasUnicas]);
+  };
+
+ const cargarProductos = async () => {
+  setCargando(true);
+  try {
+    let productos = await api.get('productos');
+    if (filtroFamilia!== 'Todas') {
+      productos = productos.filter(p => p.familia === filtroFamilia);
+    }
+    if (busquedaDebounced.trim()) {
+      const b = busquedaDebounced.toLowerCase();
+      productos = productos.filter(p =>
+        p.sku?.toLowerCase().includes(b) ||
+        p.nombre?.toLowerCase().includes(b)
+      );
+    }
+    setProductos([...productos]); // ← CAMBIA ESTA LÍNEA: agrega el spread ...
+  } catch (error) {
+    console.error('Error cargando productos:', error);
+    mostrarMensaje('Error al cargar productos', 'error');
+  }
+  setCargando(false);
 };
 
 
@@ -301,35 +333,7 @@ function App() {
       setValidezDias(15);
     }
   }, [tab]);
-
-  const cargarFamilias = async () => {
-    const productos = await api.get('productos');
-    const familiasUnicas = [...new Set(productos.map(p => p.familia))].filter(Boolean).sort();
-    setFamiliasDB(['Todas',...familiasUnicas]);
-  };
-
- const cargarProductos = async () => {
-  setCargando(true);
-  try {
-    let productos = await api.get('productos');
-    if (filtroFamilia!== 'Todas') {
-      productos = productos.filter(p => p.familia === filtroFamilia);
-    }
-    if (busquedaDebounced.trim()) {
-      const b = busquedaDebounced.toLowerCase();
-      productos = productos.filter(p =>
-        p.sku?.toLowerCase().includes(b) ||
-        p.nombre?.toLowerCase().includes(b)
-      );
-    }
-    setProductos([...productos]); // ← CAMBIA ESTA LÍNEA: agrega el spread ...
-  } catch (error) {
-    console.error('Error cargando productos:', error);
-    mostrarMensaje('Error al cargar productos', 'error');
-  }
-  setCargando(false);
-};
-
+  
 useEffect(() => {
   if (otEnEdicion && otEnEdicion.id === null) {
     setTab('cotizacion');
@@ -372,6 +376,11 @@ useEffect(() => {
 useEffect(() => {
   if (tab === 'inventario') cargarProductos();
 }, [tab, busquedaDebounced, filtroFamilia]);
+
+
+if (!autenticado) {
+    return <PasswordModal onSuccess={() => setAutenticado(true)} />;
+  }
 
   const limpiarEdicion = () => {
     setProductoEditando(null);
