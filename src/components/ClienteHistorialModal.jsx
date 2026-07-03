@@ -158,30 +158,38 @@ const cambiarEstadoOT = async (otId, nuevoEstado) => {
   }
 };
 
+const abrirModalEliminarOT = (ot) => {
+  setOtAEliminar(ot);
+  setClaveSeguridad('');
+  setErrorClave('');
+  setModalEliminarOT(true);
+};
 
+const confirmarEliminarOT = async () => {
+  if (claveSeguridad!== 'taller2026') { // ← CAMBIA ESTA CLAVE WN
+    setErrorClave('Clave incorrecta');
+    return;
+  }
 
-  const eliminarOT = async (otId, patente) => {
-    if (!window.confirm(`¿Eliminar orden de trabajo de ${patente}?`)) return;
-    try {
-      const res = await fetch(`${API_URL}/ordenes_trabajo/${otId}`, {
-        method: 'DELETE'
-      });
-      const data = await res.json();
+  try {
+    const res = await fetch(`${API_URL}/ordenes_trabajo/${otAEliminar.id}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
 
-      if (!res.ok) {
-  setMensaje(data.error, 'error');
-  return;
-}
-
-      if (data.mensaje) {
-  setMensaje(data.mensaje, 'success');
-}
-	  triggerRefresh();
-      cargarDatos();
-    } catch (err) {
-      setMensaje('Error al eliminar OT', 'error');
+    if (!res.ok) {
+      setMensaje(data.error, 'error');
+      return;
     }
-  };
+
+    setMensaje(data.mensaje || 'OT eliminada', 'success');
+    setModalEliminarOT(false);
+    triggerRefresh();
+    cargarDatos();
+  } catch (err) {
+    setMensaje('Error al eliminar OT', 'error');
+  }
+};
 
   const eliminarVehiculo = async (vehiculoId, patente) => {
     if (!window.confirm(`¿Eliminar vehículo ${patente}?\n\nSe eliminarán también todas sus OT asociadas.`)) return;
