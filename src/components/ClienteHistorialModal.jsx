@@ -530,7 +530,7 @@ const confirmarEliminarOT = async () => {
                                 👁
                               </button>
                               <button
-                                onClick={() => eliminarOT(ot.id, ot.patente)}
+                                onClick={() => abrirModalEliminarOT(ot)}
                                 className="px-2 py-1 bg-red-600 rounded text-xs font-bold hover:bg-red-700"
                                 title="Eliminar OT"
                               >
@@ -602,6 +602,61 @@ const confirmarEliminarOT = async () => {
           </div>
         </div>
       )}
+		{modalEliminarOT && (
+  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[200] p-4">
+    <div className="bg-gray-800 rounded-lg border-2 border-red-600 w-full max-w-md p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <span className="text-4xl">⚠️</span>
+        <h3 className="text-xl font-bold text-red-400">Eliminar Orden de Trabajo</h3>
+      </div>
+
+      <div className="bg-red-900 bg-opacity-40 border border-red-700 rounded p-3 mb-4">
+        <p className="text-red-200 text-sm leading-relaxed">
+          <strong>Atención:</strong> Eliminar la OT de <strong>{otAEliminar?.patente}</strong> afecta
+          el registro histórico de ingresos y no se puede deshacer.
+        </p>
+        <div className="mt-2 text-xs text-gray-300">
+          <div>Vehículo: {otAEliminar?.marca} {otAEliminar?.modelo}</div>
+          <div>Valor: {formatearPrecio(otAEliminar?.monto_final || otAEliminar?.monto_estimado || 0)}</div>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-300 text-sm mb-2 font-bold">
+          Clave de seguridad:
+        </label>
+        <input
+          type="password"
+          value={claveSeguridad}
+          onChange={(e) => {setClaveSeguridad(e.target.value); setErrorClave('')}}
+          onKeyDown={(e) => e.key === 'Enter' && confirmarEliminarOT()}
+          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white focus:border-red-500 focus:outline-none"
+          placeholder="••••••••"
+          autoFocus
+        />
+        {errorClave && <p className="text-red-400 text-xs mt-1 font-bold">{errorClave}</p>}
+      </div>
+
+      <div className="flex gap-3 justify-end">
+        <button
+          onClick={() => setModalEliminarOT(false)}
+          className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded font-bold transition"
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={confirmarEliminarOT}
+          disabled={!claveSeguridad}
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Eliminar OT
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </>
   );
 }
