@@ -5,6 +5,10 @@ import OrdenTrabajoForm from './OrdenTrabajoForm';
 import ClienteForm from './ClienteForm';
 import { abrirOTEnNuevaVentana } from '../utils/imprimirOT';
 const API_URL = import.meta.env.VITE_API_URL;
+const [modalEliminarOT, setModalEliminarOT] = useState(false);
+const [otAEliminar, setOtAEliminar] = useState(null);
+const [claveSeguridad, setClaveSeguridad] = useState('');
+const [errorClave, setErrorClave] = useState('');
 
 
 export default function ClienteHistorialModal({ rut, onCerrar, setMensaje = () => {} }) {
