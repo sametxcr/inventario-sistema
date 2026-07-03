@@ -82,7 +82,7 @@ const eliminarProducto = async (id, sku) => {
                     <td className="p-2 text-center">
   {p.imagen_url ? (
     <img 
-      src={`${API_URL}${p.imagen_url}`}
+      src={`${API_URL.replace('/api', '')}${p.imagen_url}`}
       alt={p.nombre}
       className="w-12 h-12 object-cover rounded mx-auto hover:scale-110 transition-transform"
       onClick={(e) => {
