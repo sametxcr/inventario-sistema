@@ -529,6 +529,7 @@ return (
             ref={fileInputRef}
             type="file"
             accept="image/*"
+			capture="environment"
             onChange={handleImagenChange}
             className="hidden"
             disabled={modo === 'ver'}
