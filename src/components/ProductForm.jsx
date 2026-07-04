@@ -510,43 +510,79 @@ return (
           )}
         </div>
 
-        <div className="w-48 flex-shrink-0">
-          <label className="text-xs text-gray-400 block leading-none mb-0.5">Foto Producto</label>
-          <div
-            onClick={() => modo !== 'ver' && fileInputRef.current?.click()}
-            className={`w-48 h-36 bg-gray-700 rounded border-2 border-dashed border-gray-600 ${modo !== 'ver' ? 'hover:border-cyan-500 cursor-pointer' : ''} flex items-center justify-center overflow-hidden`}
-          >
-            {previewImg? (
-  <img src={previewImg} alt="Preview" className="w-full h-full object-cover" />
-) : (
-  <div className="text-center text-gray-500 text-xs">
-    <div className="text-3xl mb-1">📷</div>
-    <div>Subir foto</div>
-  </div>
-)}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-			capture="environment"
-            onChange={handleImagenChange}
-            className="hidden"
-            disabled={modo === 'ver'}
-          />
-          {modo !== 'ver' && (
-           <button
-  type="button"
-  onClick={handleQuitarFoto}
-  className="w-full mt-0.5 text-xs text-red-400 hover:text-red-300"
->
-  Quitar foto
-</button>
-          )}
-        </div>
-      </div>
-    </form>
-  </div>
-);
-}
+       <div className="w-48 flex-shrink-0">
+  <label className="text-xs text-gray-400 block leading-none mb-0.5">Foto Producto</label>
+  
+  {/* Input pa CÁMARA */}
+  <input
+    ref={useRef(null)}
+    type="file"
+    accept="image/*"
+    capture="environment"
+    onChange={handleImagenChange}
+    className="hidden"
+    id="foto-camara"
+    disabled={modo === 'ver'}
+  />
+  
+  {/* Input pa GALERÍA */}
+  <input
+    ref={fileInputRef}
+    type="file"
+    accept="image/*"
+    onChange={handleImagenChange}
+    className="hidden"
+    id="foto-galeria"
+    disabled={modo === 'ver'}
+  />
 
+  {previewImg? (
+    <div className="relative">
+      <img src={previewImg} alt="Preview" className="w-48 h-36 object-cover rounded border border-gray-600" />
+      <button
+        type="button"
+        onClick={handleQuitarFoto}
+        className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 text-xs"
+      >
+        ✕
+      </button>
+    </div>
+  ) : (
+    <div className="w-48 h-36 border-2 border-dashed border-gray-600 rounded flex flex-col gap-1 p-2">
+      {modo !== 'ver' && (
+        <>
+          <label
+            htmlFor="foto-camara"
+            className="flex-1 bg-gray-700 hover:bg-cyan-600 rounded flex items-center justify-center cursor-pointer transition-colors text-xs"
+          >
+            📷 Sacar foto
+          </label>
+          <label
+            htmlFor="foto-galeria"
+            className="flex-1 bg-gray-700 hover:bg-blue-600 rounded flex items-center justify-center cursor-pointer transition-colors text-xs"
+          >
+            🖼️ Galería
+          </label>
+        </>
+      )}
+      {modo === 'ver' && (
+        <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">
+          <div className="text-center">
+            <div className="text-3xl mb-1">📷</div>
+            <div>Sin foto</div>
+          </div>
+        </div>
+      )}
+    </div>
+  )}
+  
+  {modo !== 'ver' && previewImg && (
+    <button
+      type="button"
+      onClick={handleQuitarFoto}
+      className="w-full mt-0.5 text-xs text-red-400 hover:text-red-300"
+    >
+      Quitar foto
+    </button>
+  )}
+</div>
