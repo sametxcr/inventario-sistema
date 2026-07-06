@@ -1,169 +1,200 @@
+import { useState } from 'react'; // ← AGREGUÉ useState
 import { formatearPrecio } from '../utils/calculations';
 import { FAMILY_COLORS } from '../config/app';
-import { api } from '../api'; // ← AGREGA ESTA LÍNEA
+import { api } from '../api';
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function ProductTable({ 
-  productos, 
+export default function ProductTable({
+  productos,
   onVerProducto,
   onEditarProducto,
-  listaCotizacion, 
-  setListaCotizacion, 
+  listaCotizacion,
+  setListaCotizacion,
   onRecargar,
   onVerHistorial,
   setMensaje
 }) {
-  
-const eliminarProducto = async (id, sku) => {
-  if (!window.confirm(`¿Eliminar ${sku}?\n\nSe borrará también su historial de movimientos.`)) return;
-  
-  try {
-    await api.delete(`productos/${id}`); // ← Ahora sí existe api
-    setListaCotizacion(listaCotizacion.filter(item => item.sku !== sku));
-    onRecargar();
-    setMensaje(`Producto ${sku} eliminado`, 'success');
-  } catch (err) {
-    setMensaje('Error al eliminar producto', 'error');
-  }
-};
+  const [imagenModal, setImagenModal] = useState(null); // ← MOVÍ ESTO ADENTRO
+
+  const eliminarProducto = async (id, sku) => {
+    if (!window.confirm(`¿Eliminar ${sku}?\n\nSe borrará también su historial de movimientos.`)) return;
+
+    try {
+      await api.delete(`productos/${id}`);
+      setListaCotizacion(listaCotizacion.filter(item => item.sku!== sku));
+      onRecargar();
+      setMensaje(`Producto ${sku} eliminado`, 'success');
+    } catch (err) {
+      setMensaje('Error al eliminar producto', 'error');
+    }
+  };
 
   return (
-    <div className="mx-4 mb-4 bg-gray-800 rounded border border-gray-700">
-      <div className="">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-700 text-white">
-            <tr>
-              <th className="p-2 w-12"></th>
-              <th className="p-2 text-left">SKU</th>
-              <th className="p-2 text-center">FOTO</th>
-              <th className="p-2 text-left">NOMBRE</th>
-              <th className="p-2 text-left">FAMILIA</th>
-              <th className="p-2 text-center">STOCK L</th>
-              <th className="p-2 text-center">STOCK B</th>
-              <th className="p-2 text-center">TOTAL</th>
-              <th className="p-2 text-right">NETO COMPRA</th>
-              <th className="p-2 text-right">NETO FINAL</th>
-              <th className="p-2 text-right">PRECIO VENTA</th>
-              <th className="p-2 text-center">ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productos.length === 0 ? (
+    <>
+      <div className="mx-4 mb-4 bg-gray-800 rounded border border-gray-700">
+        <div className="">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-700 text-white">
               <tr>
-                <td colSpan="12" className="text-center p-8 text-gray-500">
-                  No hay productos. Agrega uno arriba o importa un Excel.
-                </td>
+                <th className="p-2 w-12"></th>
+                <th className="p-2 text-left">SKU</th>
+                <th className="p-2 text-center">FOTO</th>
+                <th className="p-2 text-left">NOMBRE</th>
+                <th className="p-2 text-left">FAMILIA</th>
+                <th className="p-2 text-center">STOCK L</th>
+                <th className="p-2 text-center">STOCK B</th>
+                <th className="p-2 text-center">TOTAL</th>
+                <th className="p-2 text-right">NETO COMPRA</th>
+                <th className="p-2 text-right">NETO FINAL</th>
+                <th className="p-2 text-right">PRECIO VENTA</th>
+                <th className="p-2 text-center">ACCIONES</th>
               </tr>
-            ) : (
-              productos.map(p => {
-                const stockTotal = p.stock_local + p.stock_bodega;
-                const stockBajo = stockTotal < p.stock_minimo;
-                const colorFamilia = FAMILY_COLORS[p.familia] || '#ffffff';
-                
-                return (
-                  <tr 
-                    key={p.id} 
-                    className="border-b border-gray-700 hover:bg-gray-700 cursor-pointer transition-colors"
-                   
-                    onClick={() => onVerProducto(p)} // ← CLICK EN FILA = SOLO VER
-                  >
-                    <td className="p-2 text-center w-12">
-                      {stockBajo && (
-                        <span 
-                          className="text-red-500 text-xl animate-pulse inline-block" 
-                          title={`⚠ Stock bajo! Mínimo: ${p.stock_minimo} | Actual: ${stockTotal}`}
+            </thead>
+            <tbody>
+              {productos.length === 0? (
+                <tr>
+                  <td colSpan="12" className="text-center p-8 text-gray-500">
+                    No hay productos. Agrega uno arriba o importa un Excel.
+                  </td>
+                </tr>
+              ) : (
+                productos.map(p => {
+                  const stockTotal = p.stock_local + p.stock_bodega;
+                  const stockBajo = stockTotal < p.stock_minimo;
+                  const colorFamilia = FAMILY_COLORS[p.familia] || '#ffffff';
+
+                  return (
+                    <tr
+                      key={p.id}
+                      className="border-b border-gray-700 hover:bg-gray-700 cursor-pointer transition-colors"
+                      onClick={() => onVerProducto(p)}
+                    >
+                      <td className="p-2 text-center w-12">
+                        {stockBajo && (
+                          <span
+                            className="text-red-500 text-xl animate-pulse inline-block"
+                            title={`⚠ Stock bajo! Mínimo: ${p.stock_minimo} | Actual: ${stockTotal}`}
+                          >
+                            ⚠
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-2 font-bold">{p.sku}</td>
+
+                      <td className="p-2 text-center">
+                        <div
+                          className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center overflow-hidden mx-auto cursor-pointer hover:ring-2 hover:ring-cyan-500 transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (p.imagen_url) {
+                              setImagenModal(`${API_URL.replace('/api', '')}${p.imagen_url}`);
+                            }
+                          }}
                         >
-                          ⚠
+                          {p.imagen_url? (
+                            <img
+                              src={`${API_URL.replace('/api', '')}${p.imagen_url}`}
+                              alt={p.nombre}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div
+                            className="w-full h-full flex items-center justify-center text-xl"
+                            style={{ display: p.imagen_url? 'none' : 'flex' }}
+                          >
+                            📦
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="p-2">{p.nombre}</td>
+                      <td className="p-2">
+                        <span style={{ color: colorFamilia }} className="font-bold">
+                          {p.familia}
                         </span>
-                      )}
-                    </td>
-                    <td className="p-2 font-bold">{p.sku}</td>
-                    
-                    <td className="p-2 text-center">
-  {p.imagen_url ? (
-    <img 
-      src={`${API_URL.replace('/api', '')}${p.imagen_url}`}
-      alt={p.nombre}
-      className="w-12 h-12 object-cover rounded mx-auto hover:scale-110 transition-transform"
-      onClick={(e) => {
-        e.stopPropagation();
-        window.open(`${API_URL}${p.imagen_url}`, '_blank');
-      }}
-      onError={(e) => {
-        e.target.style.display = 'none'; // Si la foto no carga, la oculta
-      }}
-    />
-  ) : null}
-  <div 
-    className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center text-xl mx-auto"
-    style={{ display: p.imagen_url ? 'none' : 'flex' }}
-  >
-    📦
-  </div>
-</td>
-                    
-                    <td className="p-2">{p.nombre}</td>
-                    <td className="p-2">
-                      <span style={{ color: colorFamilia }} className="font-bold">
-                        {p.familia}
-                      </span>
-                    </td>
-                    <td className={`p-2 text-center ${p.stock_local === 0 ? 'text-red-500 font-bold' : ''}`}>
-                      {p.stock_local}
-                    </td>
-                    <td className={`p-2 text-center ${p.stock_bodega === 0 ? 'text-red-500 font-bold' : ''}`}>
-                      {p.stock_bodega}
-                    </td>
-                    <td className={`p-2 text-center font-bold ${stockBajo ? 'text-red-500' : ''}`}>
-                      {stockTotal}
-                    </td>
-                    <td className="p-2 text-right">{formatearPrecio(p.neto_compra)}</td>
-                    <td className="p-2 text-right text-cyan-400">{formatearPrecio(p.neto_final)}</td>
-                    <td className="p-2 text-right text-yellow-400 font-bold">
-                      {formatearPrecio(p.precio_venta)}
-                    </td>
-                    <td className="p-2 text-center">
-                      <div className="flex gap-1 justify-center">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation(); // ← CLAVE: evita el click de la fila
-                            onEditarProducto(p); // ← CLICK EN LÁPIZ = EDITAR
-                          }}
-                          className="text-cyan-400 hover:text-cyan-300 hover:scale-125 transition-all"
-                          title="Editar"
-                        >
-                          ✏️
-                        </button>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onVerHistorial(p.sku);
-                          }}
-                          className="text-green-400 hover:text-green-300 hover:scale-125 transition-all"
-                          title="Ver historial"
-                        >
-                          📊
-                        </button>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            eliminarProducto(p.id, p.sku);
-                          }}
-                          className="text-red-400 hover:text-red-300 hover:scale-125 transition-all"
-                          title="Eliminar"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                      </td>
+                      <td className={`p-2 text-center ${p.stock_local === 0? 'text-red-500 font-bold' : ''}`}>
+                        {p.stock_local}
+                      </td>
+                      <td className={`p-2 text-center ${p.stock_bodega === 0? 'text-red-500 font-bold' : ''}`}>
+                        {p.stock_bodega}
+                      </td>
+                      <td className={`p-2 text-center font-bold ${stockBajo? 'text-red-500' : ''}`}>
+                        {stockTotal}
+                      </td>
+                      <td className="p-2 text-right">{formatearPrecio(p.neto_compra)}</td>
+                      <td className="p-2 text-right text-cyan-400">{formatearPrecio(p.neto_final)}</td>
+                      <td className="p-2 text-right text-yellow-400 font-bold">
+                        {formatearPrecio(p.precio_venta)}
+                      </td>
+                      <td className="p-2 text-center">
+                        <div className="flex gap-1 justify-center">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditarProducto(p);
+                            }}
+                            className="text-cyan-400 hover:text-cyan-300 hover:scale-125 transition-all"
+                            title="Editar"
+                          >
+                            ✏
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onVerHistorial(p.sku);
+                            }}
+                            className="text-green-400 hover:text-green-300 hover:scale-125 transition-all"
+                            title="Ver historial"
+                          >
+                            📊
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              eliminarProducto(p.id, p.sku);
+                            }}
+                            className="text-red-400 hover:text-red-300 hover:scale-125 transition-all"
+                            title="Eliminar"
+                          >
+                            🗑
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+
+      {/* MODAL DE IMAGEN - AFUERA DE LA TABLA */}
+      {imagenModal && (
+        <div
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
+          onClick={() => setImagenModal(null)}
+        >
+          <div className="relative max-w-4xl max-h-" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={imagenModal}
+              alt="Vista previa"
+              className="max-w-full max-h- rounded-lg shadow-2xl"
+            />
+            <button
+              className="absolute -top-3 -right-3 bg-red-600 hover:bg-red-700 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold shadow-lg transition-colors"
+              onClick={() => setImagenModal(null)}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
-
