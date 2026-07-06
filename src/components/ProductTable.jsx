@@ -176,22 +176,22 @@ export default function ProductTable({
 
       {/* MODAL DE IMAGEN - AFUERA DE LA TABLA */}
       {imagenModal && (
-        <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
-          onClick={() => setImagenModal(null)}
-        >
-          <div className="relative max-w-4xl max-h-" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={imagenModal}
-              alt="Vista previa"
-              className="max-w-full max-h- rounded-lg shadow-2xl"
-            />
-            <button
-              className="absolute -top-3 -right-3 bg-red-600 hover:bg-red-700 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold shadow-lg transition-colors"
-              onClick={() => setImagenModal(null)}
-            >
-              ✕
-            </button>
+  <div
+    className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    onClick={() => setImagenModal(null)}
+  >
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
+      <img
+        src={imagenModal}
+        alt="Vista previa"
+        className="max-w-[80vw] max-h-[80vh] w-auto h-auto rounded-lg shadow-2xl object-contain"
+      />
+      <button
+        className="absolute -top-3 -right-3 bg-red-600 hover:bg-red-700 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold shadow-lg transition-colors"
+        onClick={() => setImagenModal(null)}
+      >
+        ✕
+      </button>
           </div>
         </div>
       )}
