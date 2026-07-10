@@ -151,7 +151,7 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
       return;
     }
 
-    const rutLimpio = form.rut.trim()? limpiarRut(form.rut) : '';
+    const rutLimpio = form.rut.trim()? limpiarRut(form.rut) : null;
     const patenteUpper = form.patente.trim().toUpperCase();
     if (!clienteEditando?.id) {
       const clientes = await api.get('clientes');
