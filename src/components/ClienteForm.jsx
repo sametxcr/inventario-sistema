@@ -97,42 +97,97 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
     if (!form.patente.trim() || clienteEditando) return;
 
     const patenteUpper = form.patente.trim().toUpperCase();
- // 👇 PEGA TODO ESTE BLOQUE AQUÍ 👇
-  // VALIDACIÓN RUT DUPLICADO - SOLO SI TIENE RUT
-  if (rutLimpio &&!clienteEditando?.id) {
     const clientes = await api.get('clientes');
-    const rutExiste = clientes.find(c => 
-      c.rut && limpiarRut(c.rut) === rutLimpio
-    );
+    const patenteExistente = clientes.find(c => c.patente === patenteUpper);
 
-    if (rutExiste) {
-      setMensaje(`RUT ${form.rut} ya registrado: ${rutExiste.nombre}`, 'error');
-      setErrorRut(`❌ Ya existe`);
-      return; // Corta aquí, no guarda
+    if (patenteExistente) {
+      setErrorPatente(`❌ Patente ya registrada con: ${patenteExistente.nombre} (RUT: ${patenteExistente.rut || 'Sin RUT'})`);
+    } else {
+      setErrorPatente('');
     }
-  }
+  };
 
-  // SI ESTÁ EDITANDO Y CAMBIÓ EL RUT, VALIDA TAMBIÉN
-  if (rutLimpio && clienteEditando?.id && rutLimpio!== limpiarRut(clienteEditando.rut)) {
-    const clientes = await api.get('clientes');
-    const rutExiste = clientes.find(c => 
-      c.rut && limpiarRut(c.rut) === rutLimpio && c.id!== clienteEditando.id
-    );
+  const resetearCampos = () => {
+    setForm({
+      nombre: '',
+      rut: '',
+      celular: '',
+      marca: '',
+      modelo: '',
+      patente: '',
+      anio: '',
+      tipo_cliente: 'natural',
+      razon_social: '',
+      giro: '',
+      direccion_facturacion: '',
+      correo_facturacion: ''
+    });
+    setClienteExistente(null);
+    setErrorRut('');
+    setErrorPatente('');
+  };
 
-    if (rutExiste) {
-      setMensaje(`RUT ${form.rut} ya pertenece a: ${rutExiste.nombre}`, 'error');
-      setErrorRut(`❌ Ya existe`);
+  const limpiarForm = () => {
+    resetearCampos();
+    onLimpiar();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.nombre.trim() ||!form.patente.trim()) {
+      setMensaje('Nombre y Patente son obligatorios', 'warning');
       return;
     }
-  }
 
+    if (form.rut.trim() &&!validarRut(form.rut)) {
+      setMensaje('El RUT ingresado no es válido', 'error');
+      setErrorRut('RUT inválido');
+      return;
+    }
+
+    if (form.tipo_cliente === 'empresa' &&!form.razon_social.trim()) {
+      setMensaje('Razón Social es obligatoria para empresas', 'warning');
+      return;
+    }
+
+    const rutLimpio = form.rut.trim()? limpiarRut(form.rut) : null;
+    const patenteUpper = form.patente.trim().toUpperCase();
+
+    // VALIDACIÓN RUT DUPLICADO - SOLO SI TIENE RUT
+    if (rutLimpio &&!clienteEditando?.id) {
+      const clientes = await api.get('clientes');
+      const rutExiste = clientes.find(c => 
+        c.rut && limpiarRut(c.rut) === rutLimpio
+      );
+
+      if (rutExiste) {
+        setMensaje(`RUT ${form.rut} ya registrado: ${rutExiste.nombre}`, 'error');
+        setErrorRut(`❌ Ya existe`);
+        return;
+      }
+    }
+
+    // SI ESTÁ EDITANDO Y CAMBIÓ EL RUT, VALIDA TAMBIÉN
+    if (rutLimpio && clienteEditando?.id && rutLimpio!== limpiarRut(clienteEditando.rut)) {
+      const clientes = await api.get('clientes');
+      const rutExiste = clientes.find(c => 
+        c.rut && limpiarRut(c.rut) === rutLimpio && c.id!== clienteEditando.id
+      );
+
+      if (rutExiste) {
+        setMensaje(`RUT ${form.rut} ya pertenece a: ${rutExiste.nombre}`, 'error');
+        setErrorRut(`❌ Ya existe`);
+        return;
+      }
+    }
 
     if (!clienteEditando?.id) {
       const clientes = await api.get('clientes');
       const patenteExistente = clientes.find(c => c.patente === patenteUpper);
 
       if (patenteExistente) {
-       setMensaje(`La patente ${patenteUpper} ya está registrada con: ${patenteExistente.nombre} (${patenteExistente.rut})`, 'error');
+       setMensaje(`La patente ${patenteUpper} ya está registrada con: ${patenteExistente.nombre} (${patenteExistente.rut || 'Sin RUT'})`, 'error');
         setErrorPatente(`❌ Ya pertenece a ${patenteExistente.nombre}`);
         return;
       }
@@ -208,7 +263,7 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
 
       resetearCampos();
       onGuardar();
-	  setMensaje('Cliente guardado correctamente', 'success'); // ← AGREGA ESTO
+      setMensaje('Cliente guardado correctamente', 'success');
     } catch (err) {
       console.error(err);
       setMensaje(err.message || 'Error al guardar cliente', 'error');
@@ -251,7 +306,7 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
       </div>
 
       {clienteExistente && (
-        <div className="mb-3 p-2 bg-blue-900/30 border border-blue-600 rounded text-sm">
+        <div className="mb-3 p-2 bg-blue-900/30 border-blue-600 rounded text-sm">
           ✅ Cliente encontrado: <strong>{clienteExistente.nombre}</strong> | {clienteExistente.celular}
           <br/>Solo completa los datos del nuevo vehículo
         </div>
@@ -344,7 +399,6 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
                   disabled={!!clienteExistente || modoVehiculo}
                 />
               </div>
-            </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Dirección Facturación</label>
