@@ -101,7 +101,7 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
     const patenteExistente = clientes.find(c => c.patente === patenteUpper);
 
     if (patenteExistente) {
-      setErrorPatente(`❌ Patente ya registrada con: ${patenteExistente.nombre} (RUT: ${patenteExistente.rut})`);
+      setErrorPatente(`❌ Patente ya registrada con: ${patenteExistente.nombre} (RUT: ${patenteExistente.rut || 'Sin RUT'})`); // <- CAMBIÉ ESTO
     } else {
       setErrorPatente('');
     }
