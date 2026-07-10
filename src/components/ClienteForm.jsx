@@ -153,6 +153,36 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
 
     const rutLimpio = form.rut.trim()? limpiarRut(form.rut) : null;
     const patenteUpper = form.patente.trim().toUpperCase();
+
+	      // VALIDACIÓN RUT DUPLICADO - SOLO SI TIENE RUT <- PEGA ESTO COMPLETO
+    if (rutLimpio &&!clienteEditando?.id) {
+      const clientes = await api.get('clientes');
+      const rutExiste = clientes.find(c => 
+        c.rut && limpiarRut(c.rut) === rutLimpio
+      );
+
+      if (rutExiste) {
+        setMensaje(`RUT ${form.rut} ya registrado: ${rutExiste.nombre}`, 'error');
+        setErrorRut(`❌ Ya existe`);
+        return;
+      }
+    }
+
+    // SI ESTÁ EDITANDO Y CAMBIÓ EL RUT, VALIDA TAMBIÉN
+    if (rutLimpio && clienteEditando?.id && rutLimpio!== limpiarRut(clienteEditando.rut)) {
+      const clientes = await api.get('clientes');
+      const rutExiste = clientes.find(c => 
+        c.rut && limpiarRut(c.rut) === rutLimpio && c.id!== clienteEditando.id
+      );
+
+      if (rutExiste) {
+        setMensaje(`RUT ${form.rut} ya pertenece a: ${rutExiste.nombre}`, 'error');
+        setErrorRut(`❌ Ya existe`);
+        return;
+      }
+    }
+    // FIN DEL BLOQUE NUEVO
+	  
     if (!clienteEditando?.id) {
       const clientes = await api.get('clientes');
       const patenteExistente = clientes.find(c => c.patente === patenteUpper);
