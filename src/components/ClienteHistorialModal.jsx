@@ -573,36 +573,39 @@ const confirmarEliminarOT = async () => {
 )}
 
       {(mostrarFormVehiculo || vehiculoEditando) && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[150] p-4">
-          <div className="w-full max-w-3xl">
-            <div className="mb-2 flex justify-end">
-              <button
-                onClick={() => {
-                  setMostrarFormVehiculo(false);
-                  setVehiculoEditando(null);
-                }}
-                className="px-4 py-2 bg-gray-600 rounded font-bold hover:bg-gray-700"
-              >
-                ✕ Cerrar
-              </button>
-            </div>
-            <ClienteForm
-  clienteEditando={vehiculoEditando}
-  rutPrellenado={vehiculoEditando? null : cliente.rut}
-  modoVehiculo={!!vehiculoEditando || mostrarFormVehiculo}
-  onGuardar={() => {
-    cargarDatos();
-    setMostrarFormVehiculo(false);
-    setVehiculoEditando(null);
-  }}
-  onLimpiar={() => {
-    setMostrarFormVehiculo(false);
-    setVehiculoEditando(null);
-  }}
-/>
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[150] p-4">
+    <div className="w-full max-w-3xl">
+      <div className="mb-2 flex justify-end">
+        <button
+          onClick={() => {
+            setMostrarFormVehiculo(false);
+            setVehiculoEditando(null);
+          }}
+          className="px-4 py-2 bg-gray-600 rounded font-bold hover:bg-gray-700"
+        >
+          ✕ Cerrar
+        </button>
+      </div>
+      <ClienteForm
+        clienteEditando={vehiculoEditando}
+        rutPrellenado={vehiculoEditando? null : cliente.rut}
+        modoVehiculo={!!vehiculoEditando || mostrarFormVehiculo}
+        setMensaje={setMensaje} // <- ESTA LÍNEA TE FALTABA WN
+        onGuardar={() => {
+          triggerRefresh();
+          cargarDatos();
+          setMostrarFormVehiculo(false);
+          setVehiculoEditando(null);
+          setMensaje('Vehículo guardado correctamente', 'success');
+        }}
+        onLimpiar={() => {
+          setMostrarFormVehiculo(false);
+          setVehiculoEditando(null);
+        }}
+      />
+    </div>
+  </div>
+)}
 		{modalEliminarOT && (
   <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[200] p-4">
     <div className="bg-gray-800 rounded-lg border-2 border-red-600 w-full max-w-md p-6">
