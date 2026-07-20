@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../api';
 import { formatearRut, validarRut, limpiarRut } from '../utils/rut';
 
-export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar, onLimpiar, modoVehiculo = false, setMensaje }) {
+export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar, onLimpiar, modoVehiculo = false, setMensaje = () => {} }) {
 
   const [form, setForm] = useState({
     nombre: '',
@@ -101,7 +101,7 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
     const patenteExistente = clientes.find(c => c.patente === patenteUpper);
 
     if (patenteExistente) {
-      setErrorPatente(`❌ Patente ya registrada con: ${patenteExistente.nombre} (RUT: ${patenteExistente.rut || 'Sin RUT'})`); // <- CAMBIÉ ESTO
+      setErrorPatente(`❌ Patente ya registrada con: ${patenteExistente.nombre} (RUT: ${patenteExistente.rut || 'Sin RUT'})`);
     } else {
       setErrorPatente('');
     }
@@ -154,8 +154,11 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
     const rutLimpio = form.rut.trim()? limpiarRut(form.rut) : null;
     const patenteUpper = form.patente.trim().toUpperCase();
 
-	      // VALIDACIÓN RUT DUPLICADO - SOLO SI TIENE RUT <- PEGA ESTO COMPLETO
-    if (rutLimpio &&!clienteEditando?.id) {
+    // FIX WN - NO VALIDAR RUT DUPLICADO SI ES 2DO VEHICULO
+    const esNuevoVehiculoParaClienteExistente = modoVehiculo || !!clienteExistente;
+
+    // VALIDACIÓN RUT DUPLICADO - SOLO CLIENTE TOTALMENTE NUEVO
+    if (rutLimpio &&!clienteEditando?.id && !esNuevoVehiculoParaClienteExistente) {
       const clientes = await api.get('clientes');
       const rutExiste = clientes.find(c => 
         c.rut && limpiarRut(c.rut) === rutLimpio
@@ -181,14 +184,13 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
         return;
       }
     }
-    // FIN DEL BLOQUE NUEVO
 	  
     if (!clienteEditando?.id) {
       const clientes = await api.get('clientes');
       const patenteExistente = clientes.find(c => c.patente === patenteUpper);
 
       if (patenteExistente) {
-       setMensaje(`La patente ${patenteUpper} ya está registrada con: ${patenteExistente.nombre} (${patenteExistente.rut})`, 'error');
+       setMensaje(`La patente ${patenteUpper} ya está registrada con: ${patenteExistente.nombre} (${patenteExistente.rut || 'Sin RUT'})`, 'error');
         setErrorPatente(`❌ Ya pertenece a ${patenteExistente.nombre}`);
         return;
       }
@@ -264,7 +266,7 @@ export default function ClienteForm({ clienteEditando, rutPrellenado, onGuardar,
 
       resetearCampos();
       onGuardar();
-	  setMensaje('Cliente guardado correctamente', 'success'); // ← AGREGA ESTO
+	  setMensaje('Cliente guardado correctamente', 'success');
     } catch (err) {
       console.error(err);
       setMensaje(err.message || 'Error al guardar cliente', 'error');
