@@ -134,7 +134,7 @@ export default function RetirosTab({ setMensaje, productos, onRetiroGuardado }) 
       // ✅ OPTIMISTIC UPDATE - Aparece altiro
       const nuevoRetiro = {
         ...retiroResponse,
-        creado: new Date().toISOString(),
+        creado: new Date().toLocaleString('sv-SE', { timeZone: 'America/Santiago' }).replace(' ', 'T') + '-04:00',
         nombre_producto: prod.nombre,
         sku: prod.sku,
         cantidad: parseInt(form.cantidad),
