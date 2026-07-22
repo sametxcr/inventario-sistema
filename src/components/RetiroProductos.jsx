@@ -639,9 +639,9 @@ const eliminarRetiro = async (id, ot_id, sku) => {
               ) : retiros.map(r => (
                 <tr key={r.id} className="border-b border-gray-700 hover:bg-gray-750">
                   <td className="p-2 text-xs whitespace-nowrap">
-                    {new Date(r.creado).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                    {new Date(r.creado).toLocaleDateString('es-CL', { timeZone: 'America/Santiago', day: '2-digit', month: '2-digit', year: '2-digit' })}
                     <div className="text-gray-500">
-                      {new Date(r.creado).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(r.creado).toLocaleTimeString('es-CL', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit', hour12: true })}
                     </div>
                   </td>
                   <td className="p-2">
