@@ -690,7 +690,7 @@ setIngresos({ hoy: ingresosHoy, semana: ingresosSemana, mes: ingresosMes });
       )}
 
 {mostrarDetalleIngresos && (() => {
-  const otsFiltradas = ultimosFinalizados.filter(ot => {
+  const otsFiltradas = todasEntregadas.filter(ot => {
     if (!filtroDesde &&!filtroHasta) return true;
     const f = parsearFechaChile(ot.fecha_entrega);
     if (!f) return false;
