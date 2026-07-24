@@ -125,7 +125,7 @@ export default function Dashboard() {
           modelo: cliente?.modelo || null
         };
       });
-
+setTodasEntregadas(otsEntregadas);
     const ultimos = [...otsEntregadas]
 .sort((a,b)=> parsearFechaChile(b.fecha_entrega) - parsearFechaChile(a.fecha_entrega))
 .slice(0,10);
