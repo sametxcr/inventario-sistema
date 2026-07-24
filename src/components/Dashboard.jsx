@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [otEditando, setOtEditando] = useState(null);
   const [ingresos, setIngresos] = useState({ hoy: 0, semana: 0, mes: 0 });
   const [ultimosFinalizados, setUltimosFinalizados] = useState([]);
+  const [todasEntregadas, setTodasEntregadas] = useState([]);	
   const [porDia, setPorDia] = useState({});
   const [ots, setOts] = useState([]);
   const [clientes, setClientes] = useState([]);
